@@ -1,8 +1,13 @@
 function instancevec3(v1, v2, v3)
     local vec3 = {}
-    vec3.x = function () return v1 end
-    vec3.y = function () return v2 end
-    vec3.z = function () return v3 end
+
+    vec3.v1 = v1
+    vec3.v2 = v2
+    vec3.v3 = v3
+
+    vec3.x = function () return vec3.v1 end
+    vec3.y = function () return vec3.v2 end
+    vec3.z = function () return vec3.v3 end
 
     vec3.pos = function (num)
         if num == 1 then
@@ -60,7 +65,7 @@ function instancevec3(v1, v2, v3)
     end
 
     vec3.dot = function (vec)
-        return instancevec3(vec3.x()*vec.x() + vec3.y()*vec.y() + vec3.z()*vec.z())
+        return vec3.x()*vec.x() + vec3.y()*vec.y() + vec3.z()*vec.z()
     end
 
     vec3.cross = function(vec)
@@ -69,6 +74,14 @@ function instancevec3(v1, v2, v3)
             vec3.z()*vec.x() - vec3.x()*vec.z(),
             vec3.x()*vec.y() - vec3.y()*vec.x()
         )
+    end
+
+    vec3.unit = function ()
+        return vec3.divbynum(vec3.len())
+    end
+
+    vec3.printinfo = function ()
+       print(vec3.x(),vec3.y(),vec3.z()) 
     end
 
     return vec3
@@ -84,6 +97,8 @@ function instanceray(origin, direction)
     ray.origin = origin
     ray.direction = direction
     ray.at = function (distance)
-        return ray.origin.add(ray.direction.multnum(distance))
+        return ray.origin.addvec(ray.direction.multnum(distance))
     end
+
+    return ray
 end
