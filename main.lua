@@ -1,6 +1,5 @@
 love = require("love")
-vector = require("vectortypes")
-trace  = require("trace")
+header = require("header")
 
 function love.load()
 
