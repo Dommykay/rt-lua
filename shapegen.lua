@@ -1,8 +1,8 @@
-function GenSphere(center, radius)
+function Sphere(center, radius)
     local sphere = ReturnHittable()
     sphere.radius = math.max(0,radius)
     sphere.center = center
-    sphere.hit = function (ray, distmin, distmax, hitmemory)
+    sphere.hit = function (ray, interval, hitmemory)
         local sphere_centre_vector = sphere.center.subvec(ray.origin)
         local a = ray.direction.lensq()
         local h = ray.direction.dot(sphere_centre_vector)
@@ -10,14 +10,15 @@ function GenSphere(center, radius)
 
         local discriminant = h*h - a*c
 
+
         if discriminant < 0 then
             return false, hitmemory
         end
         local sqrtd = math.sqrt(discriminant)
         local root = (h-sqrtd)/a
-        if distmax < root or distmin > root then
+        if not interval.surrounds(root) then
             root = (h+sqrtd)/a
-            if distmax < root or distmin > root then
+            if not interval.surrounds(root) then
                 return false, hitmemory
             end
         end
@@ -28,6 +29,6 @@ function GenSphere(center, radius)
         hitmemory.set_face_normal(ray, outward_normal)
 
         return true, hitmemory
-
     end
+    return sphere
 end

@@ -84,6 +84,10 @@ function instancevec3(v1, v2, v3)
        print(vec3.x(),vec3.y(),vec3.z()) 
     end
 
+    vec3.returnvals = function ()
+        return vec3.x(),vec3.y(),vec3.z()
+    end
+
     return vec3
 end
 

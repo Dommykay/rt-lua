@@ -1,4 +1,5 @@
 love = require("love")
+is_hittable = require("ishittable")
 header = require("header")
 
 function love.load()
@@ -23,7 +24,9 @@ function love.load()
     _G.viewport_upper_left = camera_center.subvec(instancevec3(0,0,focal_length)).subvec(viewport_u.divbynum(2)).subvec(viewport_v.divbynum(2))
     _G.pixel00_loc = viewport_upper_left.addvec(pixel_delta_u.addvec(pixel_delta_v).multnum(0.5))
 
-
+    world = HittableList()
+    world.add(Sphere(instancepoint3(0,0,-1),0.5)) -- the normal Sphere
+    world.add(Sphere(instancepoint3(0,-100.5, -1), 100)) -- the ground Sphere
 
 
 
@@ -44,10 +47,14 @@ end
 
 function CastRay(x, y, r, g, b, a)
 
+    if x == 1 and y % 10 == 0 then
+        print(RES_Y-y, "SCANLINES REMAIN")
+    end
+
     local pixel_center = pixel00_loc.addvec(pixel_delta_u.multnum(x)).addvec(pixel_delta_v.multnum(y))
     local ray_direction = pixel_center.subvec(camera_center)
     local ray = instanceray(camera_center, ray_direction)
-    r,g,b = ReturnColour(ray)
+    r,g,b = ReturnColour(ray, world)
     return r, g, b, 1.0
 end
 

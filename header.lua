@@ -1,5 +1,7 @@
 trace = require("trace")
 vector = require("vectortypes")
+shapegen = require("shapegen")
+interval = require("interval")
 
 INFINITY = math.huge
 
