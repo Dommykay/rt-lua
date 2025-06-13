@@ -1,5 +1,5 @@
 spherecol = require("spherecol")
-is_hittable = require("ishittable")
+hittable = require("hittable")
 
 function ReturnColour(ray, world)
     local hit_anything, hitmemory = world.hit(ray, Interval(0,INFINITY))

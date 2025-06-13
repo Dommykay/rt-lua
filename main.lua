@@ -1,68 +1,51 @@
 love = require("love")
-is_hittable = require("ishittable")
+hittable = require("hittable")
 header = require("header")
 
 function love.load()
 
-    _G.RES_X = love.graphics.getWidth()
-    _G.RES_Y = love.graphics.getHeight()
-    _G.ASPECT_RATIO = RES_X/RES_Y
+    _G.camera = Camera()
 
-    _G.buffer = love.image.newImageData(RES_X, RES_Y)
-    _G.screen = love.graphics.newArrayImage(buffer)
+    _G.RES_X, camera.x = love.graphics.getWidth(), love.graphics.getWidth()
+    _G.RES_Y, camera.y = love.graphics.getHeight(), love.graphics.getHeight()
 
-    _G.focal_length = 1.0
-    _G.viewport_height = 2.0
-    _G.viewport_width = viewport_height * ASPECT_RATIO
-    _G.camera_center = instancepoint3(0,0,0)
-    _G.viewport_u = instancevec3(viewport_width,0,0)
-    _G.viewport_v = instancevec3(0,-viewport_height,0)
+    camera.initialize()
 
-    _G.pixel_delta_u = viewport_u.divbynum(RES_X)
-    _G.pixel_delta_v = viewport_v.divbynum(RES_Y)
+    _G.world = HittableList()
 
-    _G.viewport_upper_left = camera_center.subvec(instancevec3(0,0,focal_length)).subvec(viewport_u.divbynum(2)).subvec(viewport_v.divbynum(2))
-    _G.pixel00_loc = viewport_upper_left.addvec(pixel_delta_u.addvec(pixel_delta_v).multnum(0.5))
+    genericmirror = Metal(instancevec3(0.9,0.9,0.9))
+    genericmatte = Lambertian(instancevec3(0.8,0.5,0.5))
 
-    world = HittableList()
-    world.add(Sphere(instancepoint3(0,0,-1),0.5)) -- the normal Sphere
-    world.add(Sphere(instancepoint3(0,-100.5, -1), 100)) -- the ground Sphere
+    
+    world.add(Sphere(instancepoint3(-0.5,0,-1),0.5, genericmirror)) -- the left normal Sphere
+    world.add(Sphere(instancepoint3(0.5,0,-1),0.5, genericmirror)) -- the right normal Sphere
+    world.add(Sphere(instancepoint3(0,-100.5, -1), 100, genericmatte)) -- the ground Sphere
 
 
 
 end
 
 function love.resize(w, h)
-    RES_X = love.graphics.getWidth()
-    RES_Y = love.graphics.getHeight()
-    ASPECT_RATIO = RES_X/RES_Y
+    _G.RES_X, camera.x = love.graphics.getWidth(), love.graphics.getWidth()
+    _G.RES_Y, camera.y = love.graphics.getHeight(), love.graphics.getHeight()
+    camera.ASPECT_RATIO = RES_X/RES_Y
+    camera.initialize()
 end
 
 function love.update(dt)
-    if buffer:getWidth() ~= RES_X or buffer:getHeight() ~= RES_Y then
-        buffer = love.image.newImageData(RES_X, RES_Y)
+    if camera.buffer:getWidth() ~= RES_X or camera.buffer:getHeight() ~= RES_Y then
+        camera.buffer = love.image.newImageData(RES_X, RES_Y)
     end
-    buffer:mapPixel(CastRay)
-end
-
-function CastRay(x, y, r, g, b, a)
-
-    if x == 1 and y % 10 == 0 then
-        print(RES_Y-y, "SCANLINES REMAIN")
-    end
-
-    local pixel_center = pixel00_loc.addvec(pixel_delta_u.multnum(x)).addvec(pixel_delta_v.multnum(y))
-    local ray_direction = pixel_center.subvec(camera_center)
-    local ray = instanceray(camera_center, ray_direction)
-    r,g,b = ReturnColour(ray, world)
-    return r, g, b, 1.0
+    camera.buffer:mapPixel(camera.renderpixel)
+    camera.noisereduction = camera.noisereduction + 0.5
+    print("NOISE REDUCTION :", camera.noisereduction)
 end
 
 function love.draw()
-    if screen:getWidth() ~= buffer:getWidth() or screen:getHeight() ~= buffer:getHeight() then
-        screen = love.graphics.newArrayImage(buffer)
+    if camera.screen:getWidth() ~= camera.buffer:getWidth() or camera.screen:getHeight() ~= camera.buffer:getHeight() then
+        camera.screen = love.graphics.newArrayImage(camera.buffer)
     else
-        screen:replacePixels(buffer, 1)
+        camera.screen:replacePixels(camera.buffer, 1)
     end
-    love.graphics.draw(screen)
+    love.graphics.draw(camera.screen)
 end

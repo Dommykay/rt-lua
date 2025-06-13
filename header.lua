@@ -2,11 +2,21 @@ trace = require("trace")
 vector = require("vectortypes")
 shapegen = require("shapegen")
 interval = require("interval")
+camera = require("camera")
+materials = require("materials")
 
-INFINITY = math.huge
+_G.INFINITY = math.huge
 
-PI = math.pi
+_G.PI = math.pi
 
 function DegreesToRadians(degrees)
     return degrees * PI / 180
+end
+
+function random()
+    return math.random()
+end
+
+function randomrange(a,b)
+    return math.random() * (b-a) + a
 end

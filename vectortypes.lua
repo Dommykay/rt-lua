@@ -1,10 +1,24 @@
 function instancevec3(v1, v2, v3)
     local vec3 = {}
+    
+    if v1 ~= nil then
+        vec3.v1 = v1
+    else
+        vec3.v1 = nil
+    end
 
-    vec3.v1 = v1
-    vec3.v2 = v2
-    vec3.v3 = v3
+    if v2 ~= nil then
+        vec3.v2 = v2
+    else
+        vec3.v2 = nil
+    end
 
+    if v3 ~= nil then
+        vec3.v3 = v3
+    else
+        vec3.v3 = nil
+    end
+    
     vec3.x = function () return vec3.v1 end
     vec3.y = function () return vec3.v2 end
     vec3.z = function () return vec3.v3 end
@@ -88,18 +102,65 @@ function instancevec3(v1, v2, v3)
         return vec3.x(),vec3.y(),vec3.z()
     end
 
+    
+    vec3.nearzero = function ()
+        local threshold = 1e-8
+        return vec3.x() < threshold and vec3.y() < threshold and vec3.z() < threshold
+    end
+
     return vec3
+end
+
+function randomvec3(min, max)
+    if min ~= nil and max ~= nil then
+        return instancevec3(randomrange(min, max),randomrange(min, max),randomrange(min, max))
+    end
+    return instancevec3(random(),random(),random())
+end
+
+
+function randomunitvec3()
+    while true do
+        local unit_vector = randomvec3(-1,1)
+        local lensq = unit_vector.lensq()
+        if lensq > 1e-160 and lensq < 1 then
+            return unit_vector.divbynum(math.sqrt(lensq))
+        end
+    end
+end
+
+function randomonhemisphere(normal)
+    local onunitsphere = randomunitvec3()
+    if normal.dot(onunitsphere) > 0 then
+        return onunitsphere
+    else
+        return onunitsphere.negative()
+    end
 end
 
 function instancepoint3(v1,v2,v3)
     return instancevec3(v1,v2,v3)
 end
 
+function reflectvector(vec,normal)
+    return vec.subvec(normal.multnum(vec.dot(normal)).multnum(2))
+end
+
 function instanceray(origin, direction)
     local ray = {}
 
-    ray.origin = origin
-    ray.direction = direction
+    if origin ~= nil then
+        ray.origin = origin
+    else 
+        ray.origin = nil
+    end
+
+    if direction ~= nil then
+        ray.direction = direction
+    else 
+        ray.direction = nil
+    end
+    
     ray.at = function (distance)
         return ray.origin.addvec(ray.direction.multnum(distance))
     end
