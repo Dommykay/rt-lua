@@ -13,7 +13,7 @@ function love.load()
 
     _G.world = HittableList()
 
-    genericmirror = Metal(instancevec3(0.9,0.9,0.9))
+    genericmirror = Metal(instancevec3(0.9,0.9,0.9), 1)
     genericmatte = Lambertian(instancevec3(0.8,0.5,0.5))
 
     

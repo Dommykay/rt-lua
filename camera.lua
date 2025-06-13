@@ -48,7 +48,7 @@ function Camera()
 
     camera.initialize = function ()
         camera.noisereduction = 3
-        camera.samples = 4
+        camera.samples = 5
         camera.bouncedepth = 15
         camera.ASPECT_RATIO = camera.x/camera.y
 
