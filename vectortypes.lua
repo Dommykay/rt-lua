@@ -146,10 +146,9 @@ function reflectvector(vec,normal)
     return vec.subvec(normal.multnum(vec.dot(normal)).multnum(2))
 end
 
-function refractvector(vec, normal, etaioveretat)
-    local costheta = math.min(normal.dot(vec.negative()), 1.0)
-    local routperp = vec.addvec(normal.mulnum(costheta)).mulnum(etaioveretat)
-    local routparallel = normal.mulnum(-math.sqrt(math.abs(1 - (routperp.lensq()))))
+function refractvector(vec, normal, etaioveretat, costheta)
+    local routperp = vec.addvec(normal.multnum(costheta)).multnum(etaioveretat)
+    local routparallel = normal.multnum(-math.sqrt(math.abs(1 - (routperp.lensq()))))
     return routperp.addvec(routparallel)
     
 end

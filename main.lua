@@ -15,10 +15,11 @@ function love.load()
 
     genericmirror = Metal(instancevec3(0.9,0.9,0.9), 1)
     genericmatte = Lambertian(instancevec3(0.8,0.5,0.5))
+    glass = Dielectric(1/38.6, instancevec3(1,1,1))
 
     
-    world.add(Sphere(instancepoint3(-0.5,0,-1),0.5, genericmirror)) -- the left normal Sphere
-    world.add(Sphere(instancepoint3(0.5,0,-1),0.5, genericmirror)) -- the right normal Sphere
+    world.add(Sphere(instancepoint3(-0.5,0.0,-2.5),0.5, genericmirror)) -- the left normal Sphere
+    world.add(Sphere(instancepoint3(-0.1,0,-1.5),0.5, glass)) -- the right normal Sphere
     world.add(Sphere(instancepoint3(0,-100.5, -1), 100, genericmatte)) -- the ground Sphere
 
 

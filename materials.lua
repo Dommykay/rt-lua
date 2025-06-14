@@ -39,19 +39,36 @@ function Metal(albedo, glossiness)
     return metal
 end
 
-function Dielectric(refractionindex)
-    local metal = Material()
-    
-    metal.finish = 1 - math.max(math.min(glossiness, 1), 0)
+function Dielectric(refractionindex, albedo)
+    local dielectric = Material()
+    dielectric.refractionindex = refractionindex
+    dielectric.findside = function (hitmemory) if hitmemory.front_face then return 1/dielectric.refractionindex else return dielectric.refractionindex end end
 
-    metal.scatter = function (ray, hitmemory)
-        local reflected = reflectvector(ray.direction, hitmemory.normal)
-        reflected = reflected.unit().addvec(randomunitvec3().multnum(metal.finish))
-        local scattered = instanceray(hitmemory.p, reflected)
-        local attenuation = albedo
-        return (hitmemory.normal.dot(scattered.direction)) > 0, scattered, attenuation
+    if albedo ~= nil then
+        dielectric.albedo = instancevec3(1,1,1)
+    else
+        dielectric.albedo = albedo
     end
 
 
-    return metal
+    dielectric.scatter = function (ray, hitmemory)
+        local attenuation = dielectric.albedo
+        local memoryi = dielectric.findside(hitmemory)
+        local unitdirection = ray.direction.unit()
+
+        local costheta = math.min(hitmemory.normal.dot(unitdirection.negative()), 1.0)
+        local sintheta = math.sqrt(1 - costheta*costheta)
+        local result
+
+        if (memoryi * sintheta) > 1 then -- critical angle reached
+            result = reflectvector(unitdirection, hitmemory.normal)
+        else
+            result = refractvector(unitdirection, hitmemory.normal, memoryi, costheta)
+        end
+
+        local scattered = instanceray(hitmemory.p, result)
+        return true, scattered, attenuation
+    end
+
+    return dielectric
 end

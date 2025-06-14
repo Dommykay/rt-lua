@@ -48,8 +48,8 @@ function Camera()
 
     camera.initialize = function ()
         camera.noisereduction = 3
-        camera.samples = 5
-        camera.bouncedepth = 15
+        camera.samples = 1
+        camera.bouncedepth = 10
         camera.ASPECT_RATIO = camera.x/camera.y
 
         camera.buffer = love.image.newImageData(camera.x, camera.y)
