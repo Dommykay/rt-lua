@@ -42,7 +42,7 @@ end
 function Dielectric(refractionindex, albedo)
     local dielectric = Material()
     dielectric.refractionindex = refractionindex
-    dielectric.findside = function (hitmemory) if hitmemory.front_face then return 1/dielectric.refractionindex else return dielectric.refractionindex end end
+    dielectric.findside = function (hitmemory) if hitmemory.front_face then return dielectric.refractionindex else return 1/dielectric.refractionindex end end
 
     if albedo ~= nil then
         dielectric.albedo = instancevec3(1,1,1)
